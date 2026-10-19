@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tantangan Sharaf — TashrifKu</title>
+<style>
+:root{--green:#214b35;--green2:#426b4d;--cream:#f7f1df;--gold:#e7d49a;--ink:#233b2b;--muted:#647466;--white:#fffdf7}
+*{box-sizing:border-box}
+body{margin:0;background:#edf1e8;color:var(--ink);font-family:Arial,Helvetica,sans-serif;line-height:1.55}
+.wrap{max-width:760px;margin:24px auto;padding:16px}
+.card{background:var(--white);border:1px solid #dce5d8;border-radius:22px;overflow:hidden;box-shadow:0 12px 35px #1d392015}
+.hero{background:var(--green);color:white;padding:26px 24px}
+.brand{font-size:12px;letter-spacing:2px;color:var(--gold);font-weight:bold}
+h1{font-size:clamp(25px,5vw,36px);line-height:1.2;margin:12px 0 8px}
+.hero p{margin:0;color:#e5eee5}
+.progress{height:7px;background:#52725d;border-radius:20px;margin-top:20px;overflow:hidden}
+.progress span{display:block;height:100%;width:0;background:var(--gold);transition:width .25s}
+.content{padding:24px}
+.pill{display:inline-block;background:#e8efe5;color:var(--green);padding:5px 11px;border-radius:30px;font-size:12px;font-weight:bold}
+.prompt{font-size:19px;font-weight:700;margin:15px 0}
+.arabic{font-size:29px;direction:rtl;text-align:center;background:var(--cream);padding:15px;border-radius:14px;margin:15px 0;color:var(--green);font-weight:bold}
+.options{display:grid;gap:10px;margin:18px 0}
+.option{display:flex;align-items:center;gap:12px;border:1px solid #d9e2d5;border-radius:13px;padding:13px 14px;cursor:pointer;background:white;transition:.15s}
+.option:hover{border-color:var(--green2);background:#f6f8f2}
+.option input{accent-color:var(--green);width:17px;height:17px}
+.option:has(input:checked){border-color:var(--green2);background:#edf3e9}
+button{border:0;border-radius:12px;padding:13px 17px;font-weight:bold;cursor:pointer;font-size:15px}
+.primary{background:var(--green);color:white;width:100%}
+.primary:disabled{opacity:.45;cursor:not-allowed}
+.secondary{background:#e8efe5;color:var(--green)}
+.feedback{margin-top:15px;padding:14px;border-radius:13px;background:#eef3e9;border:1px solid #d6e4d1}
+.feedback.bad{background:#fff2e9;border-color:#f1d5bf}
+.feedback strong{display:block;margin-bottom:4px}
+.row{display:flex;gap:10px;margin-top:16px}
+.row button{flex:1}
+.small{font-size:12px;color:var(--muted)}
+.hidden{display:none!important}
+.result{text-align:center;padding:10px 0}
+.score{font-size:48px;font-weight:800;color:var(--green)}
+.result .arabic{font-size:23px}
+footer{text-align:center;color:var(--muted);font-size:12px;margin:16px 0}
+@media(max-width:520px){.wrap{margin:8px auto;padding:8px}.hero,.content{padding:20px}.prompt{font-size:17px}.row{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <main class="card">
+  <header class="hero">
+   <div class="brand">TASHRIFKU · BELAJAR TASHRIF JADI LEBIH MUDAH</div>
+   <h1>Tantangan Sharaf</h1>
+   <p>Amati polanya, pilih jawabanmu, dan temukan seberapa jauh kamu memahami tashrif.</p>
+   <div class="progress"><span id="progress"></span></div>
+  </header>
+  <section class="content" id="quiz">
+   <span class="pill" id="counter">Pertanyaan 1 dari 5</span>
+   <div class="arabic" id="arabic">فَعَلَ – يَفْعَلُ</div>
+   <div class="prompt" id="question"></div>
+   <form id="form"><div class="options" id="options"></div><button class="primary" id="check" type="submit">Periksa jawaban</button></form>
+   <div id="feedback" class="feedback hidden" aria-live="polite"></div>
+   <div class="row hidden" id="nav"><button class="secondary" id="next" type="button">Pertanyaan berikutnya →</button></div>
+   <p class="small">Tips: perhatikan harakat huruf tengah dan pola fi'ilnya. Jawaban akan disertai penjelasan.</p>
+  </section>
+  <section class="content hidden" id="result">
+   <div class="result"><span class="pill">Misi selesai</span><h2>Hasil Tantangan Sharaf</h2><div class="score" id="score">0/5</div><p id="summary"></p><div class="arabic">العِلْمُ بِالتَّعَلُّمِ</div><p>Belajar sedikit demi sedikit akan membuat pola tashrif semakin mudah dikenali.</p><button class="primary" id="restart" type="button">Ulangi kuis</button></div>
+  </section>
+ </main>
+ <footer>TashrifKu · Media belajar sharaf interaktif</footer>
+</div>
+<script>
+const questions=[
+ {arabic:"فَعَلَ – يَفْعَلُ",q:"Manakah pasangan kata yang sesuai dengan pola فَعَلَ – يَفْعَلُ?",opts:["فَتَحَ – يَفْتَحُ","كَتَبَ – يَكْتُبُ","جَلَسَ – يَجْلِسُ","كَرُمَ – يَكْرُمُ"],a:0,why:"فَتَحَ – يَفْتَحُ mengikuti pola فَعَلَ – يَفْعَلُ. Pasangan lain memiliki pola muḍāri‘ berbeda."},
+ {arabic:"فَتَحَ",q:"Apa arti kata فَتَحَ?",opts:["Telah menulis","Telah membuka","Telah duduk","Telah keluar"],a:1,why:"فَتَحَ berarti telah membuka."},
+ {arabic:"يَفْتَحُ",q:"Kata يَفْتَحُ merupakan bentuk apa?",opts:["Fi'il māḍī","Fi'il amr","Fi'il muḍāri‘","Maṣdar"],a:2,why:"يَفْتَحُ adalah fi'il muḍāri‘, yang dapat menunjukkan pekerjaan sedang atau akan dilakukan."},
+ {arabic:"فَتَحَ – يَفْتَحُ",q:"Pada pasangan ini, harakat huruf ت dalam kedua kata adalah …",opts:["Ḍammah pada keduanya","Kasrah pada keduanya","Fatḥah pada keduanya","Sukun pada keduanya"],a:2,why:"Huruf ت berharakat fatḥah pada فَتَحَ dan يَفْتَحُ."},
+ {arabic:"ذَهَبَ",q:"Jika mengikuti pola فَعَلَ – يَفْعَلُ, manakah bentuk muḍāri‘ yang sesuai untuk ذَهَبَ?",opts:["يَذْهُبُ","يَذْهِبُ","يَذْهَبُ","يُذْهِبُ"],a:2,why:"ذَهَبَ – يَذْهَبُ merupakan contoh pola فَعَلَ – يَفْعَلُ."}
+];
+let index=0, score=0, locked=false, chosen=null;
+const $=id=>document.getElementById(id);
+function render(){
+ const q=questions[index]; locked=false;chosen=null;
+ $("counter").textContent=`Pertanyaan ${index+1} dari ${questions.length}`;
+ $("progress").style.width=`${index/questions.length*100}%`;
+ $("arabic").textContent=q.arabic;$("question").textContent=q.q;
+ $("options").innerHTML="";
+ q.opts.forEach((op,i)=>{
+  const label=document.createElement("label");label.className="option";
+  const input=document.createElement("input");input.type="radio";input.name="answer";input.value=i;
+  input.addEventListener("change",()=>{chosen=i;$("check").disabled=false});
+  const span=document.createElement("span");span.textContent=op;
+  label.append(input,span);$("options").append(label);
+ });
+ $("check").disabled=true;$("feedback").className="feedback hidden";$("feedback").textContent="";
+ $("nav").classList.add("hidden");$("check").classList.remove("hidden");
+}
+$("form").addEventListener("submit",e=>{
+ e.preventDefault();if(chosen===null||locked)return;locked=true;
+ const q=questions[index];if(chosen===q.a)score++;
+ $("options").querySelectorAll("input").forEach(x=>x.disabled=true);
+ $("check").classList.add("hidden");
+ const f=$("feedback");f.className="feedback"+(chosen===q.a?"":" bad");
+ const strong=document.createElement("strong");strong.textContent=chosen===q.a?"Jawabanmu tepat!":"Belum tepat—pelajari penjelasannya.";
+ const p=document.createElement("div");p.textContent=q.why;f.replaceChildren(strong,p);
+ $("nav").classList.remove("hidden");$("next").textContent=index===questions.length-1?"Lihat hasil →":"Pertanyaan berikutnya →";
+ $("progress").style.width=`${(index+1)/questions.length*100}%`;
+});
+$("next").addEventListener("click",()=>{
+ index++;
+ if(index<questions.length)render();
+ else{
+  $("quiz").classList.add("hidden");$("result").classList.remove("hidden");
+  $("score").textContent=`${score}/${questions.length}`;
+  $("summary").textContent=score===questions.length?"Luar biasa! Kamu menjawab semua pertanyaan dengan tepat.":score>=3?"Bagus! Ulangi bagian yang masih membingungkan agar semakin paham.":"Tetap semangat! Pelajari kembali pola dan contoh kata, lalu coba lagi.";
+ }
+});
+$("restart").addEventListener("click",()=>{index=0;score=0;$("result").classList.add("hidden");$("quiz").classList.remove("hidden");render()});
+render();
+</script>
+</body>
+</html>
